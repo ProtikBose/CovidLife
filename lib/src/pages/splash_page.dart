@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_healthcare_app/src/model/district_data.dart';
 import 'package:flutter_healthcare_app/src/model/yesterday_daily_data.dart';
 import 'package:flutter_healthcare_app/src/pages/home_page.dart';
+import 'package:flutter_healthcare_app/src/provider/district_provider.dart';
 import 'package:flutter_healthcare_app/src/provider/yesterday_provider.dart';
 import 'package:flutter_healthcare_app/src/theme/light_color.dart';
 import 'package:flutter_healthcare_app/src/theme/text_styles.dart';
@@ -15,14 +17,24 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
-  bool yesterflag = false;
-  yesterdayDailyData yes;
+  DistrictData disData;
+  bool districtData = false;
   @override
   void initState() {
+    final disData = Provider.of<DistrictDailyProvider>(context, listen: false)
+        .getDailyDistrictProvider();
+    disData.then((value) {
+      districtData = true;
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (_) => HomePage()));
+    });
+
+    /*
     Future.delayed(Duration(seconds: 2)).then((_) {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (_) => HomePage()));
     });
+    */
 
     super.initState();
   }

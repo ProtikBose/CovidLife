@@ -184,6 +184,7 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             children: <Widget>[
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   RichText(
                     text: TextSpan(
@@ -199,6 +200,13 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                   ),
+                  Text(
+                    "বিস্তারিত...",
+                    style: TextStyles.titleNormal
+                        .copyWith(color: Theme.of(context).primaryColor),
+                  ).p(8).ripple(() {
+                    Navigator.pushNamed(context, "/DashboardDetailPage");
+                  })
                 ],
               ),
               SizedBox(height: 20),

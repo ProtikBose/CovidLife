@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_healthcare_app/src/config/route.dart';
+import 'package:flutter_healthcare_app/src/provider/district_provider.dart';
 import 'package:flutter_healthcare_app/src/theme/theme.dart';
 import 'package:flutter_healthcare_app/src/provider/country_provider.dart';
 import 'package:flutter_healthcare_app/src/provider/daily_provider.dart';
@@ -13,6 +14,7 @@ import 'package:provider/provider.dart';
 void main() => runApp(MultiProvider(providers: [
       //ChangeNotifierProvider(create: (_) => HomeProvider()),
       ChangeNotifierProvider(create: (_) => DailyProvider()),
+      ChangeNotifierProvider(create: (_) => DistrictDailyProvider()),
       //ChangeNotifierProvider(create: (_) => ProvinceProvider()),
       //ChangeNotifierProvider(create: (_) => CountryProvider()),
       //ChangeNotifierProvider(create: (_) => HistoryProvider()),

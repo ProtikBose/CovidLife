@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_healthcare_app/src/pages/detail_corona/dashboard.dart';
 import 'package:flutter_healthcare_app/src/pages/detail_page.dart';
 import 'package:flutter_healthcare_app/src/pages/home_page.dart';
 import 'package:flutter_healthcare_app/src/pages/medical/medical_detail.dart';
@@ -11,7 +12,11 @@ import 'package:flutter_healthcare_app/src/widgets/coustom_route.dart';
 class Routes {
   static Map<String, WidgetBuilder> getRoute() {
     return <String, WidgetBuilder>{
-      '/': (_) => SplashPage(),
+      //'/': (_) => SplashPage(),
+      '/': (_) {
+        return SplashPage();
+      },
+
       '/HomePage': (_) => HomePage(),
     };
   }
@@ -22,6 +27,11 @@ class Routes {
       return null;
     }
     switch (pathElements[1]) {
+      /*
+      case "/":
+        return CustomRoute<bool>(
+            builder: (BuildContext context) => SplashPage());
+      */
       case "DetailPage":
         return CustomRoute<bool>(
             builder: (BuildContext context) => DetailPage(
@@ -41,6 +51,9 @@ class Routes {
             builder: (BuildContext context) => HospitalDetailPage(
                   model: settings.arguments,
                 ));
+      case "DashboardDetailPage":
+        return CustomRoute<bool>(
+            builder: (BuildContext context) => DashboardDetailPage());
     }
   }
 }
