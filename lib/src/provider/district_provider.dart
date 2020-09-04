@@ -12,10 +12,16 @@ class DistrictDailyProvider with ChangeNotifier {
 
   Future<DistrictData> getDailyDistrictProvider() async {
     print("daily provider");
+    var response;
     //String id = getCurrentDate();
-
-    final response =
-        await api.client.get("https://corona-bd.herokuapp.com/district");
+    try {
+      response =
+          await api.client.get("https://corona-bd.herokuapp.com/district");
+    } catch (e) {
+      daily = null;
+      return daily;
+    }
+    ;
     print(response.body);
     //print(js["dates"][id]["countries"]["Bangladesh"].toString());
 

@@ -7,6 +7,7 @@ import 'package:flutter_healthcare_app/src/theme/theme.dart';
 import 'package:flutter_healthcare_app/src/theme/extention.dart';
 import 'package:flutter_healthcare_app/src/widgets/progress_widget.dart';
 import 'package:flutter_healthcare_app/src/widgets/rating_start.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HospitalDetailPage extends StatefulWidget {
   HospitalDetailPage({Key key, this.model}) : super(key: key);
@@ -97,8 +98,11 @@ class _HospitalDetailPageState extends State<HospitalDetailPage> {
                                   size: 18,
                                   color: Theme.of(context).primaryColor),
                               Spacer(),
-                              RatingStar(
-                                rating: model.rating,
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width / 3.25,
+                                child: RatingStar(
+                                  rating: model.rating,
+                                ),
                               )
                             ],
                           ),
@@ -127,12 +131,16 @@ class _HospitalDetailPageState extends State<HospitalDetailPage> {
                                 color: Colors.white,
                               ),
                             ).ripple(
-                              () {},
+                              () {
+                                launch("tel:" + model.phone);
+                              },
                               borderRadius: BorderRadius.circular(10),
                             ),
+                            /*
                             SizedBox(
-                              width: 10,
+                              width: MediaQuery.of(context).size.width / 20,
                             ),
+                            */
                             Container(
                               height: 45,
                               width: 45,
@@ -144,22 +152,36 @@ class _HospitalDetailPageState extends State<HospitalDetailPage> {
                                 color: Colors.white,
                               ),
                             ).ripple(
-                              () {},
+                              () {
+                                launch("sms:" + model.phone);
+                              },
                               borderRadius: BorderRadius.circular(10),
                             ),
+                            /*
                             SizedBox(
-                              width: 10,
+                              width: MediaQuery.of(context).size.width / 20,
                             ),
-                            FlatButton(
-                              color: Theme.of(context).primaryColor,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
-                              onPressed: () {},
-                              child: Text(
-                                "Make an appointment",
-                                style: TextStyles.titleNormal.white,
-                              ).p(10),
-                            ),
+                            */
+                            SizedBox(
+                                width:
+                                    MediaQuery.of(context).size.width * (3 / 5),
+                                child: FlatButton(
+                                  color: Theme.of(context).primaryColor,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10)),
+                                  onPressed: () {
+                                    final scaffold = Scaffold.of(context);
+                                    scaffold.showSnackBar(SnackBar(
+                                      content: new Text(
+                                          'কার্যক্রম আপাতত বন্ধ রয়েছে'),
+                                      duration: new Duration(seconds: 2),
+                                    ));
+                                  },
+                                  child: Text(
+                                    "যোগাযোগ করুন",
+                                    style: TextStyles.titleNormal.white,
+                                  ).p(10),
+                                )),
                           ],
                         ).vP16,
                         Divider(

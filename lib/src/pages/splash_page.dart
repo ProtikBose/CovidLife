@@ -17,16 +17,29 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
-  DistrictData disData;
+  //DistrictData disData;
+  DistrictData val;
   bool districtData = false;
   @override
   void initState() {
+    /*
+    final daily =
+        Provider.of<DailyProvider>(context, listen: false).getDailyProvider();
+    */
     final disData = Provider.of<DistrictDailyProvider>(context, listen: false)
         .getDailyDistrictProvider();
     disData.then((value) {
+      print(value);
       districtData = true;
+      val = value;
+      print("Inside splash");
+      print(val);
+      setState(() {});
+      /*
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (_) => HomePage()));
+      */
+      Navigator.pushNamed(context, "/HomePage", arguments: val);
     });
 
     /*
@@ -48,8 +61,8 @@ class _SplashPageState extends State<SplashPage> {
             decoration: BoxDecoration(
               color: Colors.amber[50],
               image: DecorationImage(
-                image: AssetImage("assets/splash.png"),
-                fit: BoxFit.contain,
+                image: AssetImage("assets/newsplash2.png"),
+                fit: BoxFit.cover,
               ),
             ),
           )

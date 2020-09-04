@@ -4,13 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_healthcare_app/src/model/dactor_model.dart';
 import 'package:flutter_healthcare_app/src/model/daily_model.dart';
 import 'package:flutter_healthcare_app/src/model/data.dart';
+import 'package:flutter_healthcare_app/src/model/district_data.dart';
 import 'package:flutter_healthcare_app/src/model/today_daily_corona_data.dart';
+import 'package:flutter_healthcare_app/src/model/two_days_ago_model.dart';
 import 'package:flutter_healthcare_app/src/model/yesterday_daily_data.dart';
 import 'package:flutter_healthcare_app/src/pages/Widget/constant.dart';
 import 'package:flutter_healthcare_app/src/pages/Widget/counter.dart';
 import 'package:flutter_healthcare_app/src/pages/Widget/nav_drawer.dart';
 import 'package:flutter_healthcare_app/src/pages/circular_progression.dart';
 import 'package:flutter_healthcare_app/src/provider/today_provider.dart';
+import 'package:flutter_healthcare_app/src/provider/two_days_ago_provider.dart';
 import 'package:flutter_healthcare_app/src/provider/yesterday_provider.dart';
 import 'package:flutter_healthcare_app/src/provider/daily_provider.dart';
 import 'package:flutter_healthcare_app/src/theme/extention.dart';
@@ -22,10 +25,11 @@ import 'package:intl/intl.dart';
 import 'dart:math';
 
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key}) : super(key: key);
-
+  HomePage({Key key, this.dis}) : super(key: key);
+  final DistrictData dis;
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -37,85 +41,65 @@ class _HomePageState extends State<HomePage> {
   todayDailyData daily;
   bool todayflag = false;
   bool yesterflag = false;
+  bool twoyesterflag = false;
+
   int infected;
   int death;
   int recovered;
   String strdate;
   int intdate;
+
   bool notfound = true;
+  bool doneToday = false;
   int totaltestDoneToday;
   int totaltestDoneYesterday;
   int totaltestDone;
+
   yesterdayDailyData yes;
+  todayDailyData tod;
+  TwoDaysAgoDailyData tdago;
+
   final TodayDailyProvider td = TodayDailyProvider();
   final YesterdayDailyProvider yd = YesterdayDailyProvider();
+  final TwoDaysAgoDailyProvider tda = TwoDaysAgoDailyProvider();
+  DistrictData dis;
+  DailyData dailyd;
+
   @override
   void initState() {
-    //finalDate = getCurrentDate();
-    //finalDate = "2020-08-18";
-    //print(finalDate);
-    //yes = widget.yes;
-    /*
-    if (todayflag == false) {
-      Future<todayDailyData> daily = td.getTodayDailyProvider();
-      daily.then((ui) {
-        todayflag = true;
-
-        infected = ui.todayCases;
-        death = ui.todayDeaths;
-        recovered = ui.todayRecovered;
-        /*
-      DateTime todayDate = DateTime.parse(u.updatedOn);
-      print(todayDate);
-      date = DateFormat("dd-MM-yyyy").format(todayDate);
-      print(date);
-      */
-        intdate = ui.updated;
-        DateTime date = new DateTime.fromMillisecondsSinceEpoch(intdate);
-        var format = new DateFormat("yMd");
-        strdate = format.format(date);
-        /*
-      List<String> lst = date.split(" ");
-      date = lst[0] + " " + lst[1] + " " + lst[2] + " " + lst[3];
-      */
-        totaltestDoneToday = ui.tests;
-        setState(() {});
-      });
-    }
-
-    if (yesterflag == false) {
-      Future<yesterdayDailyData> dailyYes = yd.getYesterdayDailyProvider();
-      dailyYes.then((u) {
-        yesterflag = true;
-        yes = u;
-        totaltestDoneYesterday = u.tests;
-        totaltestDone = totaltestDoneToday - totaltestDoneYesterday;
-        setState(() {});
-      });
-    }
-    */
-    final daily =
-        Provider.of<DailyProvider>(context, listen: false).getDailyProvider();
+    Future<todayDailyData> daily = td.getTodayDailyProvider();
     daily.then((ui) {
-      todayflag = true;
-
-      infected = ui.positive.last24;
-      death = ui.death.last24;
-      recovered = ui.recovered.last24;
-
-      /*
-      DateTime todayDate = DateTime.parse(ui.updatedOn);
-      print(todayDate);
-      strdate = DateFormat("dd-MM-yyyy").format(todayDate);
-      print(strdate);
-      */
-      List<String> lst = ui.updatedOn.split(" ");
-      strdate = lst[0] + " " + lst[1] + " " + lst[2] + " " + lst[3];
-
-      totaltestDone = ui.test.last24;
+      if (ui.todayCases == 0 && ui.todayDeaths == 0 && ui.todayRecovered == 0) {
+        todayflag = false;
+        tod = ui;
+      } else {
+        tod = ui;
+        todayflag = true;
+      }
+      doneToday = true;
       setState(() {});
     });
-    doctorDataList = doctorMapList.map((x) => DoctorModel.fromJson(x)).toList();
+
+    Future<TwoDaysAgoDailyData> dailyt = tda.getTwoDaysAgoDailyProvider();
+    dailyt.then((uid) {
+      twoyesterflag = true;
+      tdago = uid;
+
+      setState(() {});
+    });
+
+    Future<yesterdayDailyData> dailyYes = yd.getYesterdayDailyProvider();
+    dailyYes.then((u) {
+      yesterflag = true;
+      yes = u;
+
+      setState(() {});
+    });
+
+    dis = widget.dis;
+
+    doctorDataList = TestMapList.map((x) => DoctorModel.fromJson(x)).toList();
+    doctorDataList.sort((a, b) => a.name.compareTo(b.name));
     super.initState();
   }
 
@@ -201,11 +185,18 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   Text(
-                    "বিস্তারিত...",
+                    "বিস্তারিত",
                     style: TextStyles.titleNormal
                         .copyWith(color: Theme.of(context).primaryColor),
                   ).p(8).ripple(() {
-                    Navigator.pushNamed(context, "/DashboardDetailPage");
+                    Map<String, dynamic> yourMap = {
+                      "today": this.tod,
+                      "yesterday": this.yes,
+                      "twodays": this.tdago,
+                      "district": this.dis,
+                    };
+                    Navigator.pushNamed(context, "/DashboardDetailPage",
+                        arguments: yourMap);
                   })
                 ],
               ),
@@ -322,11 +313,11 @@ class _HomePageState extends State<HomePage> {
       subtitleStyle = TextStyles.bodySm.bold.white;
     }
     return AspectRatio(
-      aspectRatio: 6 / 8,
+      aspectRatio: 7 / 8,
       child: Container(
-        height: 280,
-        width: AppTheme.fullWidth(context) * .3,
-        margin: EdgeInsets.only(left: 10, right: 10, bottom: 20, top: 10),
+        height: MediaQuery.of(context).size.height * (3 / 5),
+        width: AppTheme.fullWidth(context) * .5,
+        margin: EdgeInsets.only(left: 2, right: 2, bottom: 20, top: 10),
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -358,7 +349,7 @@ class _HomePageState extends State<HomePage> {
                       child: Text(title, style: TextStyles.titleM).hP8,
                     ),
                     SizedBox(
-                      height: 25,
+                      height: MediaQuery.of(context).size.width * (.5 / 5),
                     ),
                     /*
                     Flexible(
@@ -390,19 +381,87 @@ class _HomePageState extends State<HomePage> {
     return SliverList(
       delegate: SliverChildListDelegate(
         [
+          SizedBox(height: 5),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Text("Top Doctors", style: TextStyles.title.bold),
-              IconButton(
+              Text("ঘরে বসে করোনা পরীক্ষা করুন", style: TextStyles.title.bold),
+              /*IconButton(
                   icon: Icon(
                     Icons.sort,
                     color: Theme.of(context).primaryColor,
                   ),
-                  onPressed: () {})
+                  onPressed: () {})*/
               // .p(12).ripple(() {}, borderRadius: BorderRadius.all(Radius.circular(20))),
             ],
           ).hP16,
+          SizedBox(height: 20),
+          Container(
+              child: new GridView.count(
+                  crossAxisCount: 2,
+                  childAspectRatio: ((MediaQuery.of(context).size.width / 4) /
+                      (MediaQuery.of(context).size.height / 20)),
+                  controller: new ScrollController(keepScrollOffset: false),
+                  shrinkWrap: true,
+                  scrollDirection: Axis.vertical,
+                  children: <Widget>[
+                Container(
+                    child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      "333",
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline
+                          .apply(color: Colors.brown),
+                    ),
+                    Text("জাতীয় কল সেন্টার")
+                  ],
+                )),
+                Container(
+                    child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      "16263",
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline
+                          .apply(color: Colors.green),
+                    ),
+                    Text("স্বাস্থ্য বাতায়ন")
+                  ],
+                )),
+                Container(
+                    child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      "10655",
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline
+                          .apply(color: Colors.orange),
+                    ),
+                    Text("আইইডিসিআর")
+                  ],
+                )),
+                Container(
+                    child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      "09611677777",
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline
+                          .apply(color: Colors.purple),
+                    ),
+                    Text("বিশেষজ্ঞ হেলথ লাইন")
+                  ],
+                )),
+              ])),
           getdoctorWidgetList()
         ],
       ),
@@ -418,59 +477,70 @@ class _HomePageState extends State<HomePage> {
 
   Widget _doctorTile(DoctorModel model) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(20)),
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            offset: Offset(4, 4),
-            blurRadius: 10,
-            color: LightColor.grey.withOpacity(.2),
-          ),
-          BoxShadow(
-            offset: Offset(-3, 0),
-            blurRadius: 15,
-            color: LightColor.grey.withOpacity(.1),
-          )
-        ],
-      ),
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-        child: ListTile(
-          contentPadding: EdgeInsets.all(0),
-          leading: ClipRRect(
-            borderRadius: BorderRadius.all(Radius.circular(13)),
-            child: Container(
-              height: 55,
-              width: 55,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: randomColor(),
-              ),
-              child: Image.asset(
-                model.image,
-                height: 50,
-                width: 50,
-                fit: BoxFit.contain,
+        margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        clipBehavior: Clip.antiAliasWithSaveLayer,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              offset: Offset(4, 4),
+              blurRadius: 10,
+              color: LightColor.grey.withOpacity(.2),
+            ),
+            BoxShadow(
+              offset: Offset(-3, 0),
+              blurRadius: 15,
+              color: LightColor.grey.withOpacity(.1),
+            )
+          ],
+        ),
+        child: Container(
+          height: MediaQuery.of(context).size.height / 8,
+          padding: EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+          color: Colors.amberAccent[100],
+          child: ListTile(
+            contentPadding: EdgeInsets.all(0),
+            leading: ClipRRect(
+              borderRadius: BorderRadius.all(Radius.circular(13)),
+              child: Container(
+                height: MediaQuery.of(context).size.height / 4,
+                width: 55,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: randomColor(),
+                ),
+                child: Image.asset(
+                  model.image,
+                  height: 50,
+                  width: 50,
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
+            title: Text(model.name, style: TextStyles.titleM),
+            subtitle: Text(
+              model.location,
+              style: TextStyles.title.subTitleColor.bold,
+            ),
+            trailing: Container(
+              //height: MediaQuery.of(context).size.height / 8,
+              //width :
+              padding: EdgeInsets.all(MediaQuery.of(context).size.width / 50),
+              child: Icon(
+                Icons.phone,
+                color: Colors.blue,
+                size: MediaQuery.of(context).size.width / 10,
+              ),
+            ).ripple(
+              () {
+                print("done");
+                launch("tel:" + model.phone);
+              },
+              //borderRadius: BorderRadius.circular(10),
+            ),
           ),
-          title: Text(model.name, style: TextStyles.title.bold),
-          subtitle: Text(
-            model.type,
-            style: TextStyles.bodySm.subTitleColor.bold,
-          ),
-          trailing: Icon(
-            Icons.keyboard_arrow_right,
-            size: 30,
-            color: Theme.of(context).primaryColor,
-          ),
-        ),
-      ).ripple(() {
-        Navigator.pushNamed(context, "/DetailPage", arguments: model);
-      }, borderRadius: BorderRadius.all(Radius.circular(20))),
-    );
+        ));
   }
 
   Color randomColor() {
@@ -494,7 +564,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (todayflag == false && yesterflag == false) {
+    if ((yesterflag == false || twoyesterflag == false || doneToday == false)) {
       return ProgressHUD(
         child: Container(
           color: Colors.white,
@@ -502,6 +572,28 @@ class _HomePageState extends State<HomePage> {
         inAsyncCall: true,
         opacity: 0.0,
       );
+    } else if (todayflag == false) {
+      infected = yes.todayCases;
+      death = yes.todayDeaths;
+      recovered = yes.todayRecovered;
+      intdate = yes.updated;
+      DateTime date = new DateTime.fromMillisecondsSinceEpoch(intdate);
+      var format = new DateFormat("EEE, MMM d, yyyy");
+      strdate = format.format(date);
+      totaltestDoneToday = yes.tests;
+      totaltestDoneYesterday = tdago.tests;
+      totaltestDone = totaltestDoneToday - totaltestDoneYesterday;
+    } else {
+      infected = tod.todayCases;
+      death = tod.todayDeaths;
+      recovered = tod.todayRecovered;
+      intdate = tod.updated;
+      DateTime date = new DateTime.fromMillisecondsSinceEpoch(intdate);
+      var format = new DateFormat("EEE, MMM d, yyyy");
+      strdate = format.format(date);
+      totaltestDoneToday = tod.tests;
+      totaltestDoneYesterday = yes.tests;
+      totaltestDone = totaltestDoneToday - totaltestDoneYesterday;
     }
     return Scaffold(
       key: _scaffoldKey,

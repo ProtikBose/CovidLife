@@ -14,9 +14,14 @@ class TodayDailyProvider with ChangeNotifier {
   Future<todayDailyData> getTodayDailyProvider() async {
     print("today daily provider");
     //String id = getCurrentDate();
-
-    final response =
-        await api.client.get("https://disease.sh/v3/covid-19/countries/BGD");
+    var response;
+    try {
+      response =
+          await api.client.get("https://disease.sh/v3/covid-19/countries/BGD");
+    } catch (e) {
+      daily = null;
+      return null;
+    }
     print(response.body);
     //print(js["dates"][id]["countries"]["Bangladesh"].toString());
 

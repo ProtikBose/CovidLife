@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_healthcare_app/src/pages/detail_corona/dashboard.dart';
-import 'package:flutter_healthcare_app/src/pages/detail_page.dart';
 import 'package:flutter_healthcare_app/src/pages/home_page.dart';
+import 'package:flutter_healthcare_app/src/pages/info.dart';
 import 'package:flutter_healthcare_app/src/pages/medical/medical_detail.dart';
 import 'package:flutter_healthcare_app/src/pages/medical/medical_list.dart';
 import 'package:flutter_healthcare_app/src/pages/rumor/rumour_list.dart';
@@ -17,7 +17,7 @@ class Routes {
         return SplashPage();
       },
 
-      '/HomePage': (_) => HomePage(),
+      //'/HomePage': (_) => HomePage(),
     };
   }
 
@@ -32,11 +32,12 @@ class Routes {
         return CustomRoute<bool>(
             builder: (BuildContext context) => SplashPage());
       */
-      case "DetailPage":
+      case "HomePage":
         return CustomRoute<bool>(
-            builder: (BuildContext context) => DetailPage(
-                  model: settings.arguments,
+            builder: (BuildContext context) => HomePage(
+                  dis: settings.arguments,
                 ));
+
       case "MedicalDetailPage":
         return CustomRoute<bool>(
             builder: (BuildContext context) => MedicalListPage());
@@ -53,7 +54,12 @@ class Routes {
                 ));
       case "DashboardDetailPage":
         return CustomRoute<bool>(
-            builder: (BuildContext context) => DashboardDetailPage());
+            builder: (BuildContext context) => DashboardDetailPage(
+                  map: settings.arguments,
+                ));
+      case "InfoPage":
+        return CustomRoute<bool>(
+            builder: (BuildContext context) => ProfileAppPage());
     }
   }
 }

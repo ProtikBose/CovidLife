@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_healthcare_app/src/model/daily_model.dart';
+import 'package:flutter_healthcare_app/src/model/district_data.dart';
 
 class NavDrawer extends StatelessWidget {
   @override
@@ -15,31 +17,49 @@ class NavDrawer extends StatelessWidget {
                     fit: BoxFit.contain,
                     image: AssetImage('assets/splash.png'))),
           ),
+          SizedBox(
+            height: 10,
+          ),
+          Center(
+              child: Text(
+            "CovidLife",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          )),
+          SizedBox(
+            height: 10,
+          ),
+          Divider(),
           ListTile(
-            leading: Icon(Icons.input),
+            leading: Icon(Icons.star),
             title: Text('নিকটবর্তী হাসপাতাল সমূহ'),
             onTap: () => {Navigator.pushNamed(context, "/MedicalDetailPage")},
           ),
           ListTile(
-            leading: Icon(Icons.verified_user),
+            leading: Icon(Icons.star),
             title: Text('করোনা সংক্রান্ত তথ্য'),
             onTap: () => {Navigator.pushNamed(context, "/TipsDetailPage")},
           ),
           ListTile(
-            leading: Icon(Icons.settings),
+            leading: Icon(Icons.star),
             title: Text('গুজব থেকে দূরে থাকুন'),
             onTap: () => {Navigator.pushNamed(context, "/RumorsDetailPage")},
           ),
           ListTile(
-            leading: Icon(Icons.border_color),
-            title: Text('Feedback'),
-            onTap: () => {Navigator.of(context).pop()},
+            leading: Icon(Icons.star),
+            title: Text('অ্যাপ প্রসঙ্গে'),
+            onTap: () => {Navigator.pushNamed(context, "/InfoPage")},
           ),
-          ListTile(
-            leading: Icon(Icons.exit_to_app),
-            title: Text('Logout'),
-            onTap: () => {Navigator.of(context).pop()},
+          SizedBox(
+            height: MediaQuery.of(context).size.height * (1 / 7),
           ),
+          Center(
+            child: Text("সুস্থ থাকুন",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300)),
+          ),
+          Center(
+            child: Text("সাবধানে থাকুন",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300)),
+          )
         ],
       ),
     );
