@@ -232,7 +232,7 @@ class _DetailsboardGlobalState extends State<DetailsboardGlobal> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        roundDouble((recovered / totaltestDoneToday) * 100, 4)
+                        roundDouble((totalRecovered / totalInfected) * 100, 2)
                                 .toString() +
                             "%",
                         style: Theme.of(context)
@@ -240,7 +240,7 @@ class _DetailsboardGlobalState extends State<DetailsboardGlobal> {
                             .headline
                             .apply(color: Colors.green),
                       ),
-                      Text("সুস্থতার হার")
+                      Text("সনাক্তের বিচারে সুস্থতার হার")
                     ],
                   )),
                   Container(
@@ -262,7 +262,7 @@ class _DetailsboardGlobalState extends State<DetailsboardGlobal> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        roundDouble((death / totaltestDoneToday) * 100, 4)
+                        roundDouble((totaldeaths / totalInfected) * 100, 2)
                                 .toString() +
                             "%",
                         style: Theme.of(context)
@@ -270,7 +270,7 @@ class _DetailsboardGlobalState extends State<DetailsboardGlobal> {
                             .headline
                             .apply(color: Colors.red),
                       ),
-                      Text("মৃত্যুহার")
+                      Text("সনাক্তের বিচারে\nমৃত্যুহার")
                     ],
                   ))
                 ],

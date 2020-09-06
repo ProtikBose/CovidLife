@@ -76,6 +76,7 @@ class _HomePageState extends State<HomePage> {
         tod = ui;
         todayflag = true;
       }
+      print("today done");
       doneToday = true;
       setState(() {});
     });
@@ -84,7 +85,7 @@ class _HomePageState extends State<HomePage> {
     dailyt.then((uid) {
       twoyesterflag = true;
       tdago = uid;
-
+      print("yesterday done");
       setState(() {});
     });
 
@@ -92,7 +93,7 @@ class _HomePageState extends State<HomePage> {
     dailyYes.then((u) {
       yesterflag = true;
       yes = u;
-
+      print("yesterday done");
       setState(() {});
     });
 

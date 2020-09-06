@@ -151,8 +151,8 @@ class yesterdayDailyData {
     _oneCasePerPeople = json['oneCasePerPeople'];
     _oneDeathPerPeople = json['oneDeathPerPeople'];
     _oneTestPerPeople = json['oneTestPerPeople'];
-    _activePerOneMillion = json['activePerOneMillion'];
-    _recoveredPerOneMillion = json['recoveredPerOneMillion'];
+    _activePerOneMillion = json['activePerOneMillion'].toDouble();
+    _recoveredPerOneMillion = json['recoveredPerOneMillion'].toDouble();
     _criticalPerOneMillion = json['criticalPerOneMillion'];
   }
 

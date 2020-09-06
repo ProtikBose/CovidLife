@@ -46,7 +46,7 @@ class NavDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(Icons.star),
-            title: Text('অ্যাপ প্রসঙ্গে'),
+            title: Text('অ্যাপ প্রসঙ্গ'),
             onTap: () => {Navigator.pushNamed(context, "/InfoPage")},
           ),
           SizedBox(
