@@ -240,7 +240,7 @@ class _DetailsboardGlobalState extends State<DetailsboardGlobal> {
                             .headline
                             .apply(color: Colors.green),
                       ),
-                      Text("সনাক্তের বিচারে সুস্থতার হার")
+                      Text("শনাক্তের বিচারে সুস্থতার হার")
                     ],
                   )),
                   Container(
@@ -270,7 +270,7 @@ class _DetailsboardGlobalState extends State<DetailsboardGlobal> {
                             .headline
                             .apply(color: Colors.red),
                       ),
-                      Text("সনাক্তের বিচারে\nমৃত্যুহার")
+                      Text("শনাক্তের বিচারে\nমৃত্যুহার")
                     ],
                   ))
                 ],
